@@ -53,10 +53,10 @@ public class Cube {
             -0.5f, -0.5f, 0.0f,    // front bottom left
              0.5f, -0.5f, 0.0f,    // front bottom right
              0.5f,  0.5f, 0.0f,    // front top right
-            -0.5f,  0.5f, -1.0f,   // back top left
-            -0.5f, -0.5f, -1.0f,   // back bottom left
-             0.5f, -0.5f, -1.0f,   // back bottom right
-             0.5f,  0.5f, -1.0f }; // back top right
+            -0.5f,  0.5f, 1.0f,   // back top left
+            -0.5f, -0.5f, 1.0f,   // back bottom left
+             0.5f, -0.5f, 1.0f,   // back bottom right
+             0.5f,  0.5f, 1.0f }; // back top right
 
     private final short drawOrder[] = {
             // front
@@ -155,10 +155,19 @@ public class Cube {
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
         MyGLRenderer.checkGlError("glUniformMatrix4fv");
 
-        // Draw the square
-        GLES20.glDrawElements(
-                GLES20.GL_TRIANGLES, drawOrder.length,
-                GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+        // Draw the cube
+        if (true) {
+            // *some* of the lines (wtf)
+            GLES20.glDrawElements(
+                    GLES20.GL_LINES, drawOrder.length,
+                    GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+        }
+        else {
+            // faces
+            GLES20.glDrawElements(
+                    GLES20.GL_TRIANGLES, drawOrder.length,
+                    GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+        }
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
