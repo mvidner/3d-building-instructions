@@ -81,7 +81,7 @@ public class Cube {
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
-    float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
+    float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 0.0f };
 
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
