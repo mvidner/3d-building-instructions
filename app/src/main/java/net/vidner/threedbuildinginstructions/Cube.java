@@ -18,7 +18,7 @@ import android.opengl.GLES20;
 /**
  * A two-dimensional square for use as a drawn object in OpenGL ES 2.0.
  */
-public class Square {
+public class Cube {
 
     private final String vertexShaderCode =
             // This matrix member variable provides a hook to manipulate
@@ -48,13 +48,36 @@ public class Square {
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
-    static float squareCoords[] = {
-            -0.5f,  0.5f, 0.0f,   // top left
-            -0.5f, -0.5f, 0.0f,   // bottom left
-             0.5f, -0.5f, 0.0f,   // bottom right
-             0.5f,  0.5f, 0.0f }; // top right
+    static float cubeCoords[] = {
+            -0.5f,  0.5f, 0.0f,    // front top left
+            -0.5f, -0.5f, 0.0f,    // front bottom left
+             0.5f, -0.5f, 0.0f,    // front bottom right
+             0.5f,  0.5f, 0.0f,    // front top right
+            -0.5f,  0.5f, -1.0f,   // back top left
+            -0.5f, -0.5f, -1.0f,   // back bottom left
+             0.5f, -0.5f, -1.0f,   // back bottom right
+             0.5f,  0.5f, -1.0f }; // back top right
 
-    private final short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
+    private final short drawOrder[] = {
+            // front
+            0, 1, 2,
+            0, 2, 3,
+            // right
+            3, 2, 6,
+            3, 6, 7,
+            // back
+            7, 6, 5,
+            7, 5, 4,
+            // left
+            4, 5, 1,
+            4, 1, 0,
+            // bottom
+            1, 5, 6,
+            1, 6, 2,
+            // top
+            4, 0, 3,
+            4, 3, 7
+    }; // order to draw vertices
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
@@ -63,14 +86,14 @@ public class Square {
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      */
-    public Square() {
+    public Cube() {
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
         // (# of coordinate values * 4 bytes per float)
-                squareCoords.length * 4);
+                cubeCoords.length * 4);
         bb.order(ByteOrder.nativeOrder());
         vertexBuffer = bb.asFloatBuffer();
-        vertexBuffer.put(squareCoords);
+        vertexBuffer.put(cubeCoords);
         vertexBuffer.position(0);
 
         // initialize byte buffer for the draw list
