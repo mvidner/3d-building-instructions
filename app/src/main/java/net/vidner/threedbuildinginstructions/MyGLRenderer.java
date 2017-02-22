@@ -36,6 +36,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
     private final float[] mRotationMatrix = new float[16];
+    private final float[] mTranslationMatrix = new float[16];
 
     private float mAngle;
 
@@ -60,14 +61,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.setLookAtM(mViewMatrix, 0,       // result
                 0, 0, -3,           // eye
                 0f, 0f, 0f,         // center
-                0f, 1.0f, 0.0f);    // up
+                0.0f, 1.0f, 0.0f);    // up
 
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
-        // Draw square
+        // Draw cube
         mCube.draw(mMVPMatrix);
+
+        // Draw a translated cube
+        Matrix.setIdentityM(mTranslationMatrix, 0);
+        Matrix.translateM(mTranslationMatrix, 0,
+                0.1f, 0.2f, 0.0f);
+        Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslationMatrix, 0);
+        mCube.draw(scratch);
 
         // Create a rotation for the triangle
 
@@ -97,7 +105,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
-        Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
+        Matrix.frustumM(mProjectionMatrix, 0,
+                        -ratio, ratio,  // left, right
+                        -1, 1,          // bottom, top
+                        3, 7);          // near, far
 
     }
 
