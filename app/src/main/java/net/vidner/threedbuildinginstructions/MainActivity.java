@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.opengl;
+package net.vidner.threedbuildinginstructions;
 
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 
-public class OpenGLES20Activity extends Activity {
+public class MainActivity extends Activity {
 
     private GLSurfaceView mGLView;
 

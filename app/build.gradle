@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        applicationId "com.example.android.opengl"
+        applicationId "net.vidner.threedbuildinginstructions"
         minSdkVersion 8
         targetSdkVersion 17
     }
