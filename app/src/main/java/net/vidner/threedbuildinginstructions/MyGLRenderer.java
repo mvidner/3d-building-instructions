@@ -37,6 +37,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private final float[] mRotationMatrix = new float[16];
 
     private float mXAngle;
+    private float mYAngle;
 
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -74,6 +75,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // float angle = 0.090f * ((int) time);
 
         Matrix.setRotateM(mRotationMatrix, 0, mXAngle, 1.0f, 0, 0);
+        Matrix.rotateM(mRotationMatrix, 0,    mYAngle, 0, 1.0f, 0);
 
         // Combine the rotation matrix with the projection and camera view
         // Note that the mMVPMatrix factor *must be first* in order
@@ -167,6 +169,22 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
      */
     public void setXAngle(float angle) {
         mXAngle = angle;
+    }
+
+    /**
+     * Returns the Y rotation angle of the world
+     *
+     * @return - A float representing the rotation angle.
+     */
+    public float getYAngle() {
+        return mYAngle;
+    }
+
+    /**
+     * Sets the Y rotation angle of the world
+     */
+    public void setYAngle(float angle) {
+        mYAngle = angle;
     }
 
 }

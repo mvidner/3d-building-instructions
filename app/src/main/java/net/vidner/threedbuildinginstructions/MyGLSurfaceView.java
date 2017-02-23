@@ -54,19 +54,12 @@ public class MyGLSurfaceView extends GLSurfaceView {
                 float dx = x - mPreviousX;
                 float dy = y - mPreviousY;
 
-                // reverse direction of rotation above the mid-line
-                if (y > getHeight() / 2) {
-                    dx = dx * -1 ;
-                }
+                // note X-angle gets dY: if you move vertically, you do want an X axis rotation
+                mRenderer.setXAngle(mRenderer.getXAngle() +
+                                    (dy * TOUCH_SCALE_FACTOR));  // = 180.0f / 320
+                mRenderer.setYAngle(mRenderer.getYAngle() +
+                                    (dx * TOUCH_SCALE_FACTOR));  // = 180.0f / 320
 
-                // reverse direction of rotation to left of the mid-line
-                if (x < getWidth() / 2) {
-                    dy = dy * -1 ;
-                }
-
-                mRenderer.setXAngle(
-                        mRenderer.getXAngle() +
-                        ((dx + dy) * TOUCH_SCALE_FACTOR));  // = 180.0f / 320
                 requestRender();
         }
 
