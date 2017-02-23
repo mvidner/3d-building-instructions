@@ -29,6 +29,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private static final String TAG = "MyGLRenderer";
     private Cube mCube;
+    private MyGLSurfaceView mView;
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] mMVPMatrix = new float[16];
@@ -38,6 +39,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private float mXAngle;
     private float mYAngle;
+
+    private int mTotalSteps = 4;
+    private int mCurrentStep = 4; // one-based
+
+    // 6-tuples of x y z r g b
+    private float mBlockData[] = {
+        1, 0, 0, 1, 0, 0,
+        0, 1, 0, 0, 1, 0,
+        0, 0, 1, 0, 0, 1,
+        0, 0, 0, 1, 1, 1
+    };
 
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -85,14 +97,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, scratch, 0);
 
-        Block redblock = new Block(mCube, 1, 0, 0, 1, 0, 0);
-        redblock.draw(mMVPMatrix);
-        Block greenblock = new Block(mCube, 0, 1, 0, 0, 1, 0);
-        greenblock.draw(mMVPMatrix);
-        Block blueblock = new Block(mCube, 0, 0, 1, 0, 0, 1);
-        blueblock.draw(mMVPMatrix);
-        Block whiteblock = new Block(mCube, 0, 0, 0, 1, 1, 1);
-        whiteblock.draw(mMVPMatrix);
+        // C in Java :-/
+        int i;
+        for (i = 0; i < mCurrentStep; ++i) {
+            float x = mBlockData[6 * i + 0];
+            float y = mBlockData[6 * i + 1];
+            float z = mBlockData[6 * i + 2];
+            float r = mBlockData[6 * i + 3];
+            float g = mBlockData[6 * i + 4];
+            float b = mBlockData[6 * i + 5];
+
+            Block block = new Block(mCube, x, y, z, r, g, b);
+            block.draw(mMVPMatrix);
+        }
     }
 
     @Override
@@ -187,4 +204,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mYAngle = angle;
     }
 
+    public void previousStep() {
+        if (mCurrentStep > 1) {
+            mCurrentStep -= 1;
+            mView.requestRender();
+        }
+    }
+
+    public void nextStep() {
+        if (mCurrentStep < mTotalSteps) {
+            mCurrentStep += 1;
+            mView.requestRender();
+        }
+    }
+
+    public void setView(MyGLSurfaceView v) {
+        mView = v;
+    }
 }

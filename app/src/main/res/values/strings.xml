@@ -8,7 +8,8 @@
 -->
 <resources>
 
-    <string name="hello">Hello, 3D Building Instructions</string>
     <string name="app_name">3D Building Instructions</string>
+    <string name="button_next">&gt;</string>
+    <string name="button_prev">&lt;</string>
 
 </resources>
