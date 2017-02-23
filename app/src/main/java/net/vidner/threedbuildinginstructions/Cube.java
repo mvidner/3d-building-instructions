@@ -41,6 +41,8 @@ public class Cube {
 
     private final FloatBuffer vertexBuffer;
     private final ShortBuffer drawListBuffer;
+    private final ShortBuffer edgeDrawListBuffer;
+
     private final int mProgram;
     private int mPositionHandle;
     private int mColorHandle;
@@ -79,6 +81,21 @@ public class Cube {
             4, 3, 7
     }; // order to draw vertices
 
+    private final short edgeDrawOrder[] = {
+            0, 1,
+            1, 2,
+            2, 3,
+            3, 0,
+            4, 5,
+            5, 6,
+            6, 7,
+            7, 4,
+            0, 4,
+            1, 5,
+            2, 6,
+            3, 7
+    };
+
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
     float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 0.0f };
@@ -104,6 +121,15 @@ public class Cube {
         drawListBuffer = dlb.asShortBuffer();
         drawListBuffer.put(drawOrder);
         drawListBuffer.position(0);
+
+        // initialize byte buffer for the edge draw list
+        ByteBuffer edlb = ByteBuffer.allocateDirect(
+                // (# of coordinate values * 2 bytes per short)
+                edgeDrawOrder.length * 2);
+        edlb.order(ByteOrder.nativeOrder());
+        edgeDrawListBuffer = dlb.asShortBuffer();
+        edgeDrawListBuffer.put(edgeDrawOrder);
+        edgeDrawListBuffer.position(0);
 
         // prepare shaders and OpenGL program
         int vertexShader = MyGLRenderer.loadShader(
@@ -159,8 +185,8 @@ public class Cube {
         if (true) {
             // *some* of the lines (wtf)
             GLES20.glDrawElements(
-                    GLES20.GL_LINES, drawOrder.length,
-                    GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+                    GLES20.GL_LINES, edgeDrawOrder.length,
+                    GLES20.GL_UNSIGNED_SHORT, edgeDrawListBuffer);
         }
         else {
             // faces
