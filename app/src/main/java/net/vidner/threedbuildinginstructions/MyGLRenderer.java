@@ -36,7 +36,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
     private final float[] mRotationMatrix = new float[16];
-    private final float[] mTranslationMatrix = new float[16];
 
     private float mAngle;
 
@@ -59,24 +58,22 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         // Set the camera position (View matrix)
         Matrix.setLookAtM(mViewMatrix, 0,       // result
-                0, 0, -3,           // eye
-                0f, 0f, 0f,         // center
-                0.0f, 1.0f, 0.0f);    // up
+                0, 0, -10,           // eye
+                0, 0f, 0f,         // center
+                0.2f, 1.0f, 0.0f);    // up
 
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
-        // Draw cube
-        mCube.draw(mMVPMatrix);
-
-        // Draw a translated cube
-        Matrix.setIdentityM(mTranslationMatrix, 0);
-        Matrix.translateM(mTranslationMatrix, 0,
-                0.2f, 0.1f, 0.3f);
-        Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslationMatrix, 0);
-        mCube.draw(scratch);
-
+        Block redblock = new Block(mCube, 1, 0, 0, 1, 0, 0);
+        redblock.draw(mMVPMatrix);
+        Block greenblock = new Block(mCube, 0, 1, 0, 0, 1, 0);
+        greenblock.draw(mMVPMatrix);
+        Block blueblock = new Block(mCube, 0, 0, 1, 0, 0, 1);
+        blueblock.draw(mMVPMatrix);
+        Block whiteblock = new Block(mCube, 0, 0, 0, 1, 1, 1);
+        whiteblock.draw(mMVPMatrix);
         // Create a rotation for the triangle
 
         // Use the following code to generate constant rotation.
@@ -108,7 +105,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.frustumM(mProjectionMatrix, 0,
                         -ratio, ratio,  // left, right
                         -1, 1,          // bottom, top
-                        3, 7);          // near, far
+                        3, 20);          // near, far
 
     }
 

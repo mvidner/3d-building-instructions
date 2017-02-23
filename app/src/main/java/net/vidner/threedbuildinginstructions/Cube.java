@@ -48,17 +48,19 @@ public class Cube {
     private int mColorHandle;
     private int mMVPMatrixHandle;
 
+    static final boolean drawAsLines = true;
+
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     static float cubeCoords[] = {
-            -0.5f,  0.5f, 0.0f,    // front top left
-            -0.5f, -0.5f, 0.0f,    // front bottom left
-             0.5f, -0.5f, 0.0f,    // front bottom right
-             0.5f,  0.5f, 0.0f,    // front top right
-            -0.5f,  0.5f, 1.0f,   // back top left
-            -0.5f, -0.5f, 1.0f,   // back bottom left
-             0.5f, -0.5f, 1.0f,   // back bottom right
-             0.5f,  0.5f, 1.0f }; // back top right
+            -0.5f,  0.5f, -0.5f,    // front top left
+            -0.5f, -0.5f, -0.5f,    // front bottom left
+             0.5f, -0.5f, -0.5f,    // front bottom right
+             0.5f,  0.5f, -0.5f,    // front top right
+            -0.5f,  0.5f,  0.5f,   // back top left
+            -0.5f, -0.5f,  0.5f,   // back bottom left
+             0.5f, -0.5f,  0.5f,   // back bottom right
+             0.5f,  0.5f,  0.5f }; // back top right
 
     private final short drawOrder[] = {
             // front
@@ -98,7 +100,6 @@ public class Cube {
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
-    float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 0.0f };
 
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
@@ -151,7 +152,7 @@ public class Cube {
      * @param mvpMatrix - The Model View Project matrix in which to draw
      * this shape.
      */
-    public void draw(float[] mvpMatrix) {
+    public void draw(float[] mvpMatrix, float[] color) {
         // Add program to OpenGL environment
         GLES20.glUseProgram(mProgram);
 
@@ -182,8 +183,8 @@ public class Cube {
         MyGLRenderer.checkGlError("glUniformMatrix4fv");
 
         // Draw the cube
-        if (true) {
-            // *some* of the lines (wtf)
+        if (drawAsLines) {
+            // edges
             GLES20.glDrawElements(
                     GLES20.GL_LINES, edgeDrawOrder.length,
                     GLES20.GL_UNSIGNED_SHORT, edgeDrawListBuffer);
