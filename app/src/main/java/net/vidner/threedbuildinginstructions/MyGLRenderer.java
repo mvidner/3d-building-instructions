@@ -28,7 +28,6 @@ import android.util.Log;
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private static final String TAG = "MyGLRenderer";
-    private Triangle mTriangle;
     private Cube mCube;
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
@@ -37,7 +36,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private final float[] mViewMatrix = new float[16];
     private final float[] mRotationMatrix = new float[16];
 
-    private float mAngle;
+    private float mXAngle;
 
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -45,7 +44,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-        mTriangle = new Triangle();
         mCube = new Cube();
     }
 
@@ -62,9 +60,22 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                 0, 0f, 0f,         // center
                 0.2f, 1.0f, 0.0f);    // up
 
+        // world rotated according to user input
+
+        // Use the following code to generate constant rotation.
+        // Leave this code out when using TouchEvents.
+        // long time = SystemClock.uptimeMillis() % 4000L;
+        // float angle = 0.090f * ((int) time);
+
+        Matrix.setRotateM(mRotationMatrix, 0, mXAngle, 1.0f, 0, 0);
+
+        // Combine the rotation matrix with the projection and camera view
+        // Note that the mMVPMatrix factor *must be first* in order
+        // for the matrix multiplication product to be correct.
+        Matrix.multiplyMM(scratch, 0, mViewMatrix, 0, mRotationMatrix, 0);
 
         // Calculate the projection and view transformation
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, scratch, 0);
 
         Block redblock = new Block(mCube, 1, 0, 0, 1, 0, 0);
         redblock.draw(mMVPMatrix);
@@ -74,22 +85,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         blueblock.draw(mMVPMatrix);
         Block whiteblock = new Block(mCube, 0, 0, 0, 1, 1, 1);
         whiteblock.draw(mMVPMatrix);
-        // Create a rotation for the triangle
-
-        // Use the following code to generate constant rotation.
-        // Leave this code out when using TouchEvents.
-        // long time = SystemClock.uptimeMillis() % 4000L;
-        // float angle = 0.090f * ((int) time);
-
-        Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 0, 1.0f);
-
-        // Combine the rotation matrix with the projection and camera view
-        // Note that the mMVPMatrix factor *must be first* in order
-        // for the matrix multiplication product to be correct.
-        Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
-
-        // Draw triangle
-        mTriangle.draw(scratch);
     }
 
     @Override
@@ -153,19 +148,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     }
 
     /**
-     * Returns the rotation angle of the triangle shape (mTriangle).
+     * Returns the X rotation angle of the world
      *
      * @return - A float representing the rotation angle.
      */
-    public float getAngle() {
-        return mAngle;
+    public float getXAngle() {
+        return mXAngle;
     }
 
     /**
-     * Sets the rotation angle of the triangle shape (mTriangle).
+     * Sets the X rotation angle of the world
      */
-    public void setAngle(float angle) {
-        mAngle = angle;
+    public void setXAngle(float angle) {
+        mXAngle = angle;
     }
 
 }
