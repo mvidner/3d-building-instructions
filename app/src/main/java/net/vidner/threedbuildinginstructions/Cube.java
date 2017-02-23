@@ -48,7 +48,7 @@ public class Cube {
     private int mColorHandle;
     private int mMVPMatrixHandle;
 
-    static final boolean drawAsLines = true;
+    static final boolean drawAsLines = false;
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
@@ -128,7 +128,7 @@ public class Cube {
                 // (# of coordinate values * 2 bytes per short)
                 edgeDrawOrder.length * 2);
         edlb.order(ByteOrder.nativeOrder());
-        edgeDrawListBuffer = dlb.asShortBuffer();
+        edgeDrawListBuffer = edlb.asShortBuffer();
         edgeDrawListBuffer.put(edgeDrawOrder);
         edgeDrawListBuffer.position(0);
 
