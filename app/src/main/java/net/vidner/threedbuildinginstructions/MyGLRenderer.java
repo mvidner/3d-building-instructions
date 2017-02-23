@@ -73,7 +73,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Draw a translated cube
         Matrix.setIdentityM(mTranslationMatrix, 0);
         Matrix.translateM(mTranslationMatrix, 0,
-                0.1f, 0.2f, 0.0f);
+                0.2f, 0.1f, 0.3f);
         Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslationMatrix, 0);
         mCube.draw(scratch);
 
