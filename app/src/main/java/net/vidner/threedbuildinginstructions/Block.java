@@ -46,6 +46,7 @@ public class Block {
      */
     public void draw(float[] mvpMatrix) {
         float color[] = { mR, mG, mB, 0.0f };
+        float white[] = { 1, 1, 1, 0};
 
         float scale = 0.8f;
 
@@ -62,7 +63,8 @@ public class Block {
         float[] scratch1 = new float[16];
         Matrix.multiplyMM(scratch1, 0, translationMatrix, 0, scaleMatrix, 0);
         Matrix.multiplyMM(scratch, 0, mvpMatrix, 0, scratch1, 0);
-        mCube.draw(scratch, color);
+        mCube.draw(scratch, color, false); // faces
+        mCube.draw(scratch, white, true); // edges
     }
 
 }

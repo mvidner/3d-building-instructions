@@ -48,8 +48,6 @@ public class Cube {
     private int mColorHandle;
     private int mMVPMatrixHandle;
 
-    static final boolean drawAsLines = false;
-
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     static float cubeCoords[] = {
@@ -152,7 +150,7 @@ public class Cube {
      * @param mvpMatrix - The Model View Project matrix in which to draw
      * this shape.
      */
-    public void draw(float[] mvpMatrix, float[] color) {
+    public void draw(float[] mvpMatrix, float[] color, boolean justEdges) {
         // Add program to OpenGL environment
         GLES20.glUseProgram(mProgram);
 
@@ -183,7 +181,7 @@ public class Cube {
         MyGLRenderer.checkGlError("glUniformMatrix4fv");
 
         // Draw the cube
-        if (drawAsLines) {
+        if (justEdges) {
             // edges
             GLES20.glDrawElements(
                     GLES20.GL_LINES, edgeDrawOrder.length,
