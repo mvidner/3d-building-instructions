@@ -2,4 +2,8 @@
 
 An Android app.
 
-![screenshot: four cubes](screenshots/v0.2-four-cubes.jpg)
+![](screenshots/01.jpg)
+![](screenshots/02.jpg)
+![](screenshots/03.jpg)
+![](screenshots/04.jpg)
+![](screenshots/05.jpg)
