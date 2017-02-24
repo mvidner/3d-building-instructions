@@ -1,9 +1,19 @@
 package net.vidner.threedbuildinginstructions;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by mvidner on 24.2.17.
@@ -23,45 +33,55 @@ public class Toy {
         Return a hardcoded toy: a house
      */
     static Toy newHouse(Context ctx) {
-        int[][] ids = {
-                {
-                        R.drawable.house_s00_z00
-                },
-                {
-                        0,
-                        R.drawable.house_s01_z01
-                },
-                {
-                        0,
-                        0,
-                        R.drawable.house_s02_z02,
-                        R.drawable.house_s02_z03,
-                        R.drawable.house_s02_z04,
-                        R.drawable.house_s02_z05,
-                        R.drawable.house_s02_z06,
-                        R.drawable.house_s02_z07,
-                        R.drawable.house_s02_z08
-                },
-                {
-                        0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        R.drawable.house_s03_z09,
-                        R.drawable.house_s03_z10,
-                        R.drawable.house_s03_z11,
-                        R.drawable.house_s03_z12
-                },
-                {
-                        0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0,
-                        R.drawable.house_s04_z13
-                }
-        };
+        ArrayList<ToyStep> toySteps = new ArrayList<ToyStep>();
 
-        ArrayList<ToyStep> steps = new ArrayList<ToyStep>();
-        for (int[] stepdata: ids) {
-            ToyStep step = new ToyStep(ctx, stepdata);
-            steps.add(step);
-        };
-        Toy t = new Toy(steps);
+        // do not rescale the bitmap according to display dpi
+        BitmapFactory.Options bmOpts = new BitmapFactory.Options();
+        bmOpts.inScaled = false;
+
+        try {
+            Pattern pat = Pattern.compile("s([0-9]+)_z([0-9]+).*");
+
+            String path = "house";
+            String[] fileNames = ctx.getAssets().list(path);
+            SortedSet<String> sortedFileNames = new TreeSet<String>(Arrays.asList(fileNames));
+
+            int currentStep = -1;
+            ToyStep currentToyStep = null;
+
+            for(String fileName: sortedFileNames) {
+                Matcher m = pat.matcher(fileName);
+                if (!m.matches())
+                    continue;
+
+                String sStep = m.group(1);
+                String sZ = m.group(2);
+                int step = Integer.valueOf(sStep);
+                int z = Integer.valueOf(sZ);
+
+                if (step != currentStep) {
+                    if (currentToyStep != null) {
+                        toySteps.add(currentToyStep);
+                    }
+                    currentStep = step;
+                    currentToyStep = new ToyStep();
+                }
+
+                InputStream is = ctx.getAssets().open(path + "/" + fileName);
+                Bitmap bm = BitmapFactory.decodeStream(is, null, bmOpts);
+                currentToyStep.setLayer(z, bm);
+                //Log.i("Toy", "file " + fileName);
+            }
+            // don't forget the last step
+            if (currentToyStep != null) {
+                toySteps.add(currentToyStep);
+            }
+        }
+        catch (IOException e) {
+            Log.e("Toy", "OOPS " + e.toString());
+        }
+
+        Toy t = new Toy(toySteps);
         return t;
     }
 
