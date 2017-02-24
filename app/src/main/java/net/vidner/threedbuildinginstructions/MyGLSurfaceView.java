@@ -59,7 +59,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
                 // note X-angle gets dY: if you move vertically, you do want an X axis rotation
                 mRenderer.setXAngle(mRenderer.getXAngle() +
                                     (dy * TOUCH_SCALE_FACTOR));  // = 180.0f / 320
-                mRenderer.setYAngle(mRenderer.getYAngle() +
+                mRenderer.setZAngle(mRenderer.getZAngle() +
                                     (dx * TOUCH_SCALE_FACTOR));  // = 180.0f / 320
 
                 requestRender();

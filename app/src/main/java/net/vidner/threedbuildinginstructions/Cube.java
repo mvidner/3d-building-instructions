@@ -156,25 +156,30 @@ public class Cube {
 
         // get handle to vertex shader's vPosition member
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
+        MyGLRenderer.checkGlError("glGetAttribLocation vPosition");
 
         // Enable a handle to the triangle vertices
         GLES20.glEnableVertexAttribArray(mPositionHandle);
+        MyGLRenderer.checkGlError("glEnableVertexAttribArray");
 
         // Prepare the triangle coordinate data
         GLES20.glVertexAttribPointer(
                 mPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 vertexStride, vertexBuffer);
+        MyGLRenderer.checkGlError("glVertexAttribPointer");
 
         // get handle to fragment shader's vColor member
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
+        MyGLRenderer.checkGlError("glGetUniformLocation vColor");
 
         // Set color for drawing the cube
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
+        MyGLRenderer.checkGlError("glUniform4fv");
 
         // get handle to shape's transformation matrix
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-        MyGLRenderer.checkGlError("glGetUniformLocation");
+        MyGLRenderer.checkGlError("glGetUniformLocation uMVPMatrix");
 
         // Apply the projection and view transformation
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
@@ -193,6 +198,7 @@ public class Cube {
                     GLES20.GL_TRIANGLES, drawOrder.length,
                     GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
         }
+        MyGLRenderer.checkGlError("glDrawElements");
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);

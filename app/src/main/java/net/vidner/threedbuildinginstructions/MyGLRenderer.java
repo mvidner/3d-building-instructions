@@ -11,6 +11,7 @@ package net.vidner.threedbuildinginstructions;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -28,8 +29,9 @@ import android.util.Log;
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private static final String TAG = "MyGLRenderer";
-    private Cube mCube;
     private MyGLSurfaceView mView;
+    private Context mContext;
+    private Toy mToy;
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] mMVPMatrix = new float[16];
@@ -39,17 +41,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private float mXAngle;
     private float mYAngle;
+    private float mZAngle;
 
-    private int mTotalSteps = 4;
-    private int mCurrentStep = 4; // one-based
 
-    // 6-tuples of x y z r g b
-    private float mBlockData[] = {
-        1, 0, 0, 1, 0, 0,
-        0, 1, 0, 0, 1, 0,
-        0, 0, 1, 0, 0, 1,
-        0, 0, 0, 1, 1, 1
-    };
+    MyGLRenderer(Context ctx) {
+        mContext = ctx;
+    }
 
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -63,7 +60,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Enable depth testing
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
-        mCube = new Cube();
+        mToy  = Toy.newHouse(mContext);
     }
 
     @Override
@@ -75,9 +72,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         // Set the camera position (View matrix)
         Matrix.setLookAtM(mViewMatrix, 0,       // result
-                0, 0, -10,           // eye
-                0, 0f, 0f,         // center
-                0.2f, 1.0f, 0.0f);    // up
+                // these values (and frustumM in the next method)
+                // are tuned for the house toy whose
+                // bounding box is [-16, -16, 0] x [16, 16, 13]
+                0f, 70f, 32f,           // eye
+                0f, 0f, 16f,            // center
+                0.0f, 0.0f, 1.0f);    // up
 
         // world rotated according to user input
 
@@ -88,6 +88,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         Matrix.setRotateM(mRotationMatrix, 0, mXAngle, 1.0f, 0, 0);
         Matrix.rotateM(mRotationMatrix, 0,    mYAngle, 0, 1.0f, 0);
+        Matrix.rotateM(mRotationMatrix, 0,    mZAngle, 0, 0, 1.0f);
 
         // Combine the rotation matrix with the projection and camera view
         // Note that the mMVPMatrix factor *must be first* in order
@@ -97,19 +98,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, scratch, 0);
 
-        // C in Java :-/
-        int i;
-        for (i = 0; i < mCurrentStep; ++i) {
-            float x = mBlockData[6 * i + 0];
-            float y = mBlockData[6 * i + 1];
-            float z = mBlockData[6 * i + 2];
-            float r = mBlockData[6 * i + 3];
-            float g = mBlockData[6 * i + 4];
-            float b = mBlockData[6 * i + 5];
-
-            Block block = new Block(mCube, x, y, z, r, g, b);
-            block.draw(mMVPMatrix);
-        }
+        mToy.draw(mMVPMatrix);
     }
 
     @Override
@@ -125,7 +114,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.frustumM(mProjectionMatrix, 0,
                         -ratio, ratio,  // left, right
                         -1, 1,          // bottom, top
-                        3, 20);          // near, far
+                        3, 100);          // near, far
 
     }
 
@@ -166,56 +155,39 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     */
     public static void checkGlError(String glOperation) {
         int error;
-        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+        if ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
             Log.e(TAG, glOperation + ": glError " + error);
             throw new RuntimeException(glOperation + ": glError " + error);
         }
     }
 
-    /**
-     * Returns the X rotation angle of the world
-     *
-     * @return - A float representing the rotation angle.
-     */
     public float getXAngle() {
         return mXAngle;
     }
-
-    /**
-     * Sets the X rotation angle of the world
-     */
-    public void setXAngle(float angle) {
-        mXAngle = angle;
-    }
-
-    /**
-     * Returns the Y rotation angle of the world
-     *
-     * @return - A float representing the rotation angle.
-     */
     public float getYAngle() {
         return mYAngle;
     }
-
-    /**
-     * Sets the Y rotation angle of the world
-     */
+    public float getZAngle() {
+        return mZAngle;
+    }
+    public void setXAngle(float angle) {
+        mXAngle = angle;
+    }
     public void setYAngle(float angle) {
         mYAngle = angle;
     }
+    public void setZAngle(float angle) {
+        mZAngle = angle;
+    }
 
     public void previousStep() {
-        if (mCurrentStep > 1) {
-            mCurrentStep -= 1;
-            mView.requestRender();
-        }
+        mToy.previousStep();
+        mView.requestRender();
     }
 
     public void nextStep() {
-        if (mCurrentStep < mTotalSteps) {
-            mCurrentStep += 1;
-            mView.requestRender();
-        }
+        mToy.nextStep();
+        mView.requestRender();
     }
 
     public void setView(MyGLSurfaceView v) {

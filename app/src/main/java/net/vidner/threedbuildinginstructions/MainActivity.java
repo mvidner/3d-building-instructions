@@ -27,7 +27,7 @@ public class MainActivity extends Activity {
         // Request an OpenGL ES 2.0 compatible context.
         mGLView.setEGLContextClientVersion(2);
         // Set the Renderer for drawing on the GLSurfaceView
-        mRenderer = new MyGLRenderer();
+        mRenderer = new MyGLRenderer(this);
         mGLView.setRenderer(mRenderer);
         mRenderer.setView(mGLView);
 

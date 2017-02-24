@@ -24,12 +24,11 @@ public class Block {
     private final float mR, mG, mB;
 
     // a unit cube
-    private final Cube mCube;
+    private static Cube mCube = new Cube();
     /**
      * Sets up the drawing object data for use in an OpenGL ES context.
      */
-    public Block(Cube cube, float x, float y, float z, float r, float g, float b) {
-        mCube = cube;
+    public Block(float x, float y, float z, float r, float g, float b) {
         mX = x;
         mY = y;
         mZ = z;
@@ -63,8 +62,10 @@ public class Block {
         float[] scratch1 = new float[16];
         Matrix.multiplyMM(scratch1, 0, translationMatrix, 0, scaleMatrix, 0);
         Matrix.multiplyMM(scratch, 0, mvpMatrix, 0, scratch1, 0);
-        mCube.draw(scratch, color, false); // faces
-        mCube.draw(scratch, white, true); // edges
+
+        mCube.draw(scratch, color, false); // colored faces
+        mCube.draw(scratch, white, true);  // white edges
+        //mCube.draw(scratch, color, true); // colored edges
     }
 
 }
