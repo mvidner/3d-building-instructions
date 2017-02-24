@@ -19,6 +19,9 @@ public class ToyStep {
     public ToyStep(Context ctx, int[] resourceIdsForZLayers) {
         mBlocks = new ArrayList<Block>();
         Resources ress = ctx.getResources();
+        // do not rescale the bitmap according to display dpi
+        BitmapFactory.Options bmOpts = new BitmapFactory.Options();
+        bmOpts.inScaled = false;
 
         int z;
         int rid;
@@ -26,20 +29,11 @@ public class ToyStep {
             rid = resourceIdsForZLayers[z];
             if (rid == 0)
                 continue;
-            Bitmap bm = BitmapFactory.decodeResource(ress, rid);
+            Bitmap bm = BitmapFactory.decodeResource(ress, rid, bmOpts);
 
             int x, y;
             for (y = 0; y < bm.getHeight(); ++y) {
-                // WTF, a 32x32 resource file ends up as a 96x96 bitmap!?
-                if (y % 3 != 0)
-                    continue;
-                float yy = y / 3;
-
                 for (x = 0; x < bm.getWidth(); ++x) {
-                    if (x % 3 != 0)
-                        continue;
-                    float xx = x / 3;
-
                     int color = bm.getPixel(x, y);
                     int alpha = Color.alpha(color);
                     if (alpha > 0) {
@@ -49,7 +43,7 @@ public class ToyStep {
 
                         // those -16 are a crude way to center the model
                         // so that my stupid way of rotating the world along the origin makes sense
-                        Block block = new Block(xx - 16, yy - 16, z, r, g, b);
+                        Block block = new Block(x - 16, y - 16, z, r, g, b);
                         mBlocks.add(block);
                     }
                 }
